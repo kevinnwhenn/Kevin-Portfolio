@@ -1,8 +1,7 @@
-### Display customer return rates based off of their sales
-#### Include salesperson assigned to customer
-NOTE: 
-- table names and columns have been modified
-- return rate is calculated within the report
+### Display Customer Return Rates
+- **Question**: Which of our customers are returning the most amount of product?
+- Return rate is calculated within the report by dividing customers' returned merchandise value by their invoiced merchandise value.
+- Stored procedure is created with date and salesperson parameters. This will allow the user to view data based on their desired date range and salesperson. If salesperson parameter ```IS NULL``` then report will populate values summed together.
 
 ```sql
 SELECT
