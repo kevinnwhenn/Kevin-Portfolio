@@ -41,7 +41,8 @@ Select
 From
     [dbo].[CustomerReturns_view]
 Where
-    CustomerReturns_view.Date BETWEEN @startdate AND @enddate
+	CustomerReturns_view.Date >= @startdate
+	AND CustomerReturns_view.Date <= @enddate
     AND (
         (ISNULL(@salesid, '') <> '' AND CustomerReturns_view.Salesperson = @salesid) OR
         (ISNULL(@salesid, '') = '')
