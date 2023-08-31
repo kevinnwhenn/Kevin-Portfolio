@@ -4,23 +4,44 @@
 - Stored procedure is created with date and salesperson parameters. This will allow the user to view data based on their desired date range and salesperson. If salesperson parameter ```IS NULL``` then report will populate values summed together.
 
 ```sql
+--SQL VIEW--
 SELECT
-	ArSalesMove.TrnYear,
-	ArSalesMove.TrnMonth,
-	ArSalesMove.Customer,
-	ArCustomer.Name,
-	SUM(CASE WHEN ArSalesMove.DocumentType = 'I' THEN ArSalesMove.InvoiceValue ELSE 0 END) AS Invoices,
-	SUM(CASE WHEN ArSalesMove.DocumentType = 'C' THEN ArSalesMove.InvoiceValue ELSE 0 END) AS Credits,
-	CONVERT(date, ArSalesMove.TrnDate) AS Date,
-	ArSalesMove.Salesperson
+	SalesTable.Year,
+	SalesTable.TrnMonth,
+	SalesTable.Customer,
+	CustomerTable.Name,
+	SUM(CASE WHEN SalesTable.DocumentType = 'I' THEN SalesTable.InvoiceValue ELSE 0 END) AS Invoices,
+	SUM(CASE WHEN SalesTable.DocumentType = 'C' THEN SalesTable.InvoiceValue ELSE 0 END) AS Credits,
+	CONVERT(date, SalesTable.TrnDate) AS Date,
+	SalesTable.Salesperson
 FROM
-	Syspro1.dbo.ArSalesMove
-LEFT JOIN Syspro1.dbo.ArCustomer ON ArCustomer.Customer = ArSalesMove.Customer
+	Database.dbo.SalesTable
+LEFT JOIN Database.dbo.CustomerTable ON CustomerTable.Customer = SalesTable.Customer
 GROUP BY
-	ArSalesMove.TrnYear,
-	ArSalesMove.TrnMonth,
-	ArSalesMove.Customer,
-	ArCustomer.Name,
-	CONVERT(date, ArSalesMove.TrnDate),
-	ArSalesMove.Salesperson
+	SalesTable.TrnYear,
+	SalesTable.TrnMonth,
+	SalesTable.Customer,
+	CustomerTable.Name,
+	CONVERT(date, SalesTable.TrnDate),
+	SalesTable.Salesperson
+
+--SQL Stored Procedure--
+ALTER PROCEDURE [dbo].[CustomerReturns]
+    	@startdate Date,
+	@enddate Date,
+	@salesid VarChar(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+Select
+	*
+From
+    [dbo].[CustomerReturns_view]
+Where
+    CustomerReturns_view.Date BETWEEN @startdate AND @enddate
+    AND (
+        (ISNULL(@salesid, '') <> '' AND CustomerReturns_view.Salesperson = @salesid) OR
+        (ISNULL(@salesid, '') = '')
+    );
+END
 ```
