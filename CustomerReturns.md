@@ -26,7 +26,7 @@ GROUP BY
 	SalesTable.Salesperson
 
 --SQL Stored Procedure--
-ALTER PROCEDURE [dbo].[CustomerReturns]
+CREATE PROCEDURE [dbo].[CustomerReturns]
     	@startdate Date,
 	@enddate Date,
 	@salesid VarChar(10)
