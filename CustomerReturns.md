@@ -5,6 +5,8 @@
 
 ```sql
 --SQL VIEW--
+CREATE VIEW [dbo].[CustomerReturns_view]
+AS
 SELECT
 	SalesTable.TrnYear,
 	SalesTable.TrnMonth,
@@ -24,6 +26,7 @@ GROUP BY
 	CustomerTable.Name,
 	CONVERT(date, SalesTable.TrnDate),
 	SalesTable.Salesperson
+GO
 
 --SQL Stored Procedure--
 CREATE PROCEDURE [dbo].[CustomerReturns]
