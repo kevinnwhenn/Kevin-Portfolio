@@ -1,4 +1,4 @@
-### Display Customer Return Rates
+### Daily Cycle Count Report
 - The purpose of this report is to monitor daily cycle counts vs. active bins that have not been cycle counted. This will give us the visibility of what has been counted and needs to be counted with $value of the Inventory.
 
 ```sql
