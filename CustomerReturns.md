@@ -6,7 +6,7 @@
 ```sql
 --SQL VIEW--
 SELECT
-	SalesTable.Year,
+	SalesTable.TrnYear,
 	SalesTable.TrnMonth,
 	SalesTable.Customer,
 	CustomerTable.Name,
