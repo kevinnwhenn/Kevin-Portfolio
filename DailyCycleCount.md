@@ -1,5 +1,6 @@
 ### Daily Cycle Count Report
 - The purpose of this report is to monitor daily cycle counts vs. active bins that have not been cycle counted. This will give us the visibility of what has been counted and needs to be counted with $value of the Inventory.
+- We are wanting to start cycling counting daily to see if our counts line up with the total amount received for the entire year. This way we can determine if we can eliminate the process of doing a big inventory count each year.
 
 ```sql
 --SQL VIEW--
