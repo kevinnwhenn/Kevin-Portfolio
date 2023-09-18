@@ -8,30 +8,42 @@ CREATE VIEW [dbo].[CycleCount_view]
 AS 
 
 SELECT
-	tcch.Bin,
-	tcch.StockCode,
-	im.Description,
-	tcch.CapturedQty,
-	(tcch.UnitCostPrice * tcch.CapturedQty) AS CapturedValue,
-	tcch.WMSSOH,
-	(tcch.UnitCostPrice * tcch.WMSSOH) AS WMSValue,
-	tcch.SysproSOH,
-	(tcch.UnitCostPrice * tcch.SysproSOH) AS SysproValue,
-	CONVERT(date, tcch.DateTime) AS Date,
-	(
-	SELECT
-		COUNT(DISTINCT tcch.Bin)
-	FROM
-		WarehouseDatabase.dbo.CycleCount tcch
-	LEFT JOIN WarehouseDatabase.dbo.tblBin tb ON tb.Bin = tcch.Bin
-	WHERE
-		tb.Warehouse = '01') AS TotalBins
+	tb.Bin,
+	SUM(counts.CapturedQty) AS CapturedQty,
+	SUM(counts.CapturedValue) AS CapturedValue,
+	SUM(counts.DataScopeQty) AS DataScopeQty,
+	SUM(counts.DataScopeValue) AS DataScopeValue,
+	SUM(counts.SysproQty) AS SysproQty,
+	SUM(counts.SysproValue) AS SysproValue,
+	counts.Date
 FROM
-	WarehouseDatabase.dbo.CycleCount tcch WITH(NOLOCK)
-LEFT JOIN WarehouseCompany1.dbo.tblBin tb WITH(NOLOCK) ON tb.Bin = tcch.Bin
-LEFT JOIN Database.dbo.Inventory im WITH(NOLOCK) ON im.StockCode = tcch.StockCode
+	WarehouseCompany1.dbo.tblBin tb
+LEFT JOIN (
+	SELECT
+		tcch.Bin,
+		SUM(tcch.CapturedQty) AS CapturedQty,
+		SUM(tcch.UnitCostPrice * tcch.CapturedQty) AS CapturedValue,
+		SUM(tcch.WMSSOH) AS DataScopeQty,
+		SUM(tcch.UnitCostPrice * tcch.WMSSOH) AS DataScopeValue,
+		SUM(tcch.SysproSOH) AS SysproQty,
+		SUM(tcch.UnitCostPrice * tcch.SysproSOH) AS SysproValue,
+		CONVERT(date, tcch.DateTime) AS Date
+	FROM
+		WarehouseCompany1.dbo.tblCycleCountHistory tcch
+	LEFT JOIN WarehouseCompany1.dbo.tblBin tb ON tb.Bin = tcch.Bin
+	WHERE
+		tb.Warehouse = '01'
+		AND YEAR(tcch.DateTime) = YEAR(GETDATE())
+	GROUP BY	
+		tcch.Bin,
+		CONVERT(date, tcch.DateTime)
+) AS counts ON counts.Bin = tb.Bin
 WHERE
 	tb.Warehouse = '01'
+	AND tb.bLevel = 'Remove from Grid'
+GROUP BY
+	tb.Bin,
+	counts.Date
 
 GO
 
@@ -42,6 +54,14 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-SELECT * FROM [dbo].[CycleCount_view] WHERE [Date] = @Date
+	SELECT
+		*
+	FROM
+		[dbo].[DailyCycleCountSummary_view]
+	WHERE
+	(
+        (ISNULL(@Quarter, '') <> '' AND DATEPART(q,[DailyCycleCountSummary_view].Date)=@Quarter) OR
+        (ISNULL(@Quarter, '') = '')
+    );
 END
 GO
