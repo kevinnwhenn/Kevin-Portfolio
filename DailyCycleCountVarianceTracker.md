@@ -1,3 +1,6 @@
+![image](https://github.com/kevinnwhenn/Kevin-Portfolio/assets/109677078/a9ec51aa-5515-4dc9-bb59-2990258be0c1)
+
+
 ```sql
 --SQL VIEW--
 CREATE VIEW [dbo].[CycleCountVariance_view]
